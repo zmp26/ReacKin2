@@ -1,0 +1,7 @@
+#Rutherford elastic scattering at 5,6,7 MeV - 25 events each
+#
+#format:
+#targetA targetSym beamA beamSym ejA ejSym beamEnergy ejExE recExE numevents outname
+197	Au	4	He	4	He	5.	0.	0.	25	ruthscat_5mev.out
+197	Au	4	He	4	He	6.	0.	0.	25	ruthscat_6mev.out
+197	Au	4	He	4	He	7.	0.	0.	25	ruthscat_7mev.out

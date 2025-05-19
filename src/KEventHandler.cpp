@@ -31,17 +31,13 @@ void KEventHandler::ConfigureReaction(int at, const char* symt,
 	mReaction.SetExEnergy(mExEjectile,mExProduct);
 }
 
-double KEventHandler::SampleTheta(){
-	return thetaDist(rng);
-}
-
-double KEventHandler::SamplePhi(){
-	return phiDist(rng);
+void KEventHandler::SetLegendreCoefficients(const std::vector<double>& coefficients){
+	mAngleSampler.SetLegendreCoefficients(coefficients);
 }
 
 void KEventHandler::RunEvent_output(bool output){
-	double theta = SampleTheta();
-	double phi = SamplePhi();
+	double theta, phi;
+	mAngleSampler.Sample(theta,phi);
 
 	//get ejectile and product from reaction
 	KNucleus* ejectile = mReaction.GetEjectile();
@@ -77,8 +73,8 @@ std::string KEventHandler::RunEvent(){
 	std::string retval = "-666\t-666\t-666\t-666\t-666\t-666\t-666";
 	std::ostringstream result;
 
-	double theta = SampleTheta();
-	double phi = SamplePhi();
+	double theta, phi;
+	mAngleSampler.Sample(theta,phi);
 
 	//get ejectile and product from reaction
 	KNucleus* ejectile = mReaction.GetEjectile();

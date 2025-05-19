@@ -46,6 +46,7 @@ private:
 		int numEvents = 1;
 
 		std::string outputFileName;
+		std::vector<double> legendreCoefficients;
 	};
 
 	std::vector<ReactionFileContents> mReactions;

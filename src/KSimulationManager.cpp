@@ -1,4 +1,5 @@
 #include "KSimulationManager.h"
+#include "KEventHandler.h"
 
 #include <fstream>
 #include <sstream>
@@ -29,6 +30,24 @@ bool KSimulationManager::ParseConfigLine(const std::string& line, ReactionFileCo
 		std::getline(ss,token,delim); contents.exProduct = std::stod(token);
 		std::getline(ss,token,delim); contents.numEvents = std::stoi(token);
 		std::getline(ss,token,delim); contents.outputFileName = token;
+
+		//extract legendre coefficients (example: "[a,b,c]")
+		size_t start_pos = line.find('[');
+		size_t end_pos = line.find(']');
+		if(start_pos != std::string::npos && end_pos != std::string::npos && start_pos < end_pos){
+			std::string coeff_str = line.substr(start_pos + 1, end_pos - start_pos - 1);
+			std::stringstream coeff_ss(coeff_str);
+			std::string coeff_token;
+			while(std::getline(coeff_ss,coeff_token, ',')){
+				try{
+					contents.legendreCoefficients.push_back(std::stod(coeff_token));
+				} catch(const std::invalid_argument& e){
+					std::cerr << "Warning: Invalid Legendre coefficient: " << coeff_token << std::endl;
+				} catch(const std::out_of_range& e){
+					std::cerr << "Warning: Legendre coefficient out of range: " << coeff_token << std::endl;
+				}
+			}
+		}
 
 		return true;
 	} catch(...){
@@ -103,6 +122,7 @@ void KSimulationManager::RunAllToIndividualFiles(const std::string& outputDir, b
 			contents.ejectileA, contents.ejectileSym.c_str(),
 			contents.beamEnergy, contents.exEjectile, contents.exProduct
 		);
+		handler.SetLegendreCoefficients(contents.legendreCoefficients);
 
 		std::cout << "Writing reaction " << i << " to " << filename.str() << "...\n";
 		handler.RunBatch(contents.numEvents,outfile,includeHeaders);
@@ -128,6 +148,7 @@ void KSimulationManager::RunAllToSingleFile(const std::string& outputFileName, b
 			contents.ejectileA, contents.ejectileSym.c_str(),
 			contents.beamEnergy, contents.exEjectile, contents.exProduct
 		);
+		handler.SetLegendreCoefficients(contents.legendreCoefficients);
 
 		//optionally prepend header for each reaction
 		if(includeHeaders){
@@ -161,6 +182,7 @@ void KSimulationManager::RunReaction(size_t index, bool verbose){
 		contents.ejectileA, contents.ejectileSym.c_str(),
 		contents.beamEnergy, contents.exEjectile, contents.exProduct
 	);
+	handler.SetLegendreCoefficients(contents.legendreCoefficients);
 
 	if(verbose){
 		std::cout << "Running reaction " << index+1 << "/" << mReactions.size() << ": "

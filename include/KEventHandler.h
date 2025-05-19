@@ -1,10 +1,12 @@
 #ifndef KEVENTHANDLER_H
 #define KEVENTHANDLER_H
 
-#include "KReaction.h"
 #include <string>
 #include <iostream>
 #include <fstream>
+
+#include "KReaction.h"
+#include "KAngleSampler.h"
 
 class KEventHandler{
 public:
@@ -25,14 +27,14 @@ public:
 	void RunBatch(int n, bool output=false);		//run n events
 	void RunBatch(int n, std::ofstream& outfile, bool header=false);		//run n events output to outfile
 
+	void SetLegendreCoefficients(const std::vector<double>& coefficients);
+
 private:
 	KReaction mReaction;
 	double mBeamEnergy;
 	double mExEjectile;
 	double mExProduct;
-
-	double SampleTheta();		//returns theta from [0,pi] -> eventually add better sampling w/ KSampler class
-	double SamplePhi();			//returns phi from [0,2pi]
+	KAngleSampler mAngleSampler;
 };
 
 #endif
